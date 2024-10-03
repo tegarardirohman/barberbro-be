@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15.2
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data-barberbro:/var/lib/postgresql/data
+    networks:
+      - springboot-network
+
+  app:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_NAME: ${SPRING_NAME}
+      SPRING_PORT: ${SPRING_PORT}
+      SPRING_HOST: ${SPRING_HOST}
+      SPRING_DB_PORT: ${SPRING_DB_PORT}
+      SPRING_DATABASE: ${SPRING_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+    depends_on:
+      - db
+    volumes:
+      # - assets-volume:/app/src/main/resources/static/assets/
+      - ./src/main/resources/static/assets:/app/src/main/resources/static/assets
+    networks:
+      - springboot-network
+
+volumes:
+  postgres-data-barberbro:
+
+networks:
+  springboot-network:
+    driver: bridge
